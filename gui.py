@@ -124,7 +124,7 @@ def show_summary_window():
 
     # Build DataFrame
     rows = [
-        {"Date": s.start_time.date(), "Project": s.project, "Hours": round(s.duration / 3600, 2)}
+        {"Date": s.start_time.date(), "Project": s.project, "Hours": s.duration / 3600}
         for s in all_sessions if s.duration
     ]
     if not rows:
@@ -136,6 +136,8 @@ def show_summary_window():
         index="Project", columns="Date", values="Hours",
         aggfunc="sum", fill_value=0
     ).sort_index(axis=1)
+
+    summary = summary.round(2)
 
     dates = summary.columns
     projects = summary.index.tolist()
