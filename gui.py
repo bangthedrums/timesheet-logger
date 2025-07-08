@@ -1,6 +1,7 @@
 # gui.py
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import askokcancel, WARNING
 from datetime import datetime, date
 import os, sys
 from tracker import switch_project, compute_totals, finalize_sessions
@@ -37,21 +38,23 @@ INTERVAL = INTERVAL_OPTIONS[selected_interval]
 
 def end_workday():
     global sessions, update_ui_handle
-    log_debug_event("End of workday triggered.")
-    sessions = finalize_sessions(sessions)
-    save_sessions(sessions)
+    answer = askokcancel('Confirm exit', 'Save final log entry and quit Timesheet Logger app?', icon=WARNING)
+    if answer:
+        log_debug_event("End of workday triggered.")
+        sessions = finalize_sessions(sessions)
+        save_sessions(sessions)
 
-    if update_ui_handle:
-        popup.after_cancel(update_ui_handle)
-        update_ui_handle = None
-    
-    try:
-        popup.destroy()
-        root.destroy()
-        log_debug_event("Application shutdown completed.")
-        sys.exit()
-    except Exception as e:
-        log_debug_event(f"Shutdown failed: {e}")
+        if update_ui_handle:
+            popup.after_cancel(update_ui_handle)
+            update_ui_handle = None
+        
+        try:
+            popup.destroy()
+            root.destroy()
+            log_debug_event("Application shutdown completed.")
+            sys.exit()
+        except Exception as e:
+            log_debug_event(f"Shutdown failed: {e}")
 
 
 def open_manage_projects(projects):
@@ -196,12 +199,14 @@ def show_summary_window():
 
     # === Delete Button INSIDE table_frame ===
     def delete_past_entries():
-        today = date.today()
-        updated = [s for s in all_sessions if s.start_time.date() == today]
-        overwrite_sessions(updated)
-        log_debug_event("Deleted past session entries.")
-        win.destroy()
-        show_summary_window()
+        answer = askokcancel('Confirmation', 'Are you sure?  This will delete all past log entries up to and including yesterday!', icon=WARNING)
+        if answer:
+            today = date.today()
+            updated = [s for s in all_sessions if s.start_time.date() == today]
+            overwrite_sessions(updated)
+            log_debug_event("Deleted past session entries.")
+            win.destroy()
+            show_summary_window()
 
     del_btn = tk.Button(
         table_frame, text="Delete Past Entries", command=delete_past_entries,
