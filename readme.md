@@ -1,7 +1,8 @@
 # Timesheet Logger
 
-**Timesheet Logger** is a lightweight desktop application for tracking time spent on various projects throughout the workday. It provides an intuitive GUI popup at scheduled intervals to prompt users to log their current task. The tool supports daily summaries, project management, and fine-tuned log editing, all stored in local CSV files for easy backup or analysis.
+**Timesheet Logger** is a lightweight python GUI application for tracking time spent on various projects throughout the workday to help with accurate timesheet completion at the end of the week. It provides an intuitive GUI that will run all day and pop up on screen at scheduled intervals to prompt the user to log their current task by simply clicking on the name of the project. The app will automatically minimise itself as soon as the user has responded.  The tool provides a summary view for viewing logged hours per project per day for use when completing a timesheet. A 'Manage Projects' feature allows the user to select the number and names of the buttons on the GUI.  A log editing feature allows the user to correct errors if a button press was missed. All data is stored locally in CSV files for easy backup or analysis.  The app will refresh itself from the log file on startup, and so will carry on from where it left off after a system reboot (provided the End Workday button was used to close the app before reboot).
 
+Please note: this app has only been tested in Windows.  Peformance in Linux is currently not known.
 ---
 
 ## Features
