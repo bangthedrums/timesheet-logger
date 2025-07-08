@@ -8,7 +8,7 @@ CONFIG_FILE = os.path.join(BASE_DIR, "projectConfig.csv")
 DEBUG_LOG_FILE = os.path.join(BASE_DIR, "debug_logfile.txt")
 
 INTERVAL_OPTIONS = {
-    "10 secs": 10 * 1000,
+    # "10 secs": 10 * 1000,
     "5 mins": 5 * 60 * 1000,
     "15 mins": 15 * 60 * 1000,
     "30 mins": 30 * 60 * 1000,
