@@ -38,7 +38,7 @@ INTERVAL = INTERVAL_OPTIONS[selected_interval]
 
 def end_workday():
     global sessions, update_ui_handle
-    answer = askokcancel('Confirm exit', 'Save final log entry and quit Timesheet Logger app?', icon=WARNING)
+    answer = askokcancel('Confirm exit', 'Save final log entry and quit Timesheet Logger app?', icon=WARNING, parent=popup)
     if answer:
         log_debug_event("End of workday triggered.")
         sessions = finalize_sessions(sessions)
@@ -62,7 +62,7 @@ def open_manage_projects(projects):
 
     manage_win = tk.Toplevel(popup)
     manage_win.title("Manage Projects")
-    manage_win.geometry("350x400")
+    # manage_win.geometry("300x400")
     manage_win.configure(bg=manproj_win_bg)
     manage_win.attributes("-topmost", True)
 
@@ -84,9 +84,18 @@ def open_manage_projects(projects):
         btn.pack(side="left", padx=5)
         project_vars.append(var)
 
+        # Resize window after adding row
+        manage_win.update_idletasks()
+        new_height = manage_win.winfo_reqheight() + 20
+        manage_win.geometry(f"300x{new_height}")
+
     def remove_row(row_widget, var):
         project_vars.remove(var)
         row_widget.destroy()
+
+        manage_win.update_idletasks()
+        new_height = manage_win.winfo_reqheight() + 20
+        manage_win.geometry(f"300x{new_height}")
 
     for name in projects:
         add_row(name)
@@ -104,6 +113,10 @@ def open_manage_projects(projects):
 
     tk.Button(manage_win, text="Add Project", command=lambda: add_row("")).pack(pady=5)
     tk.Button(manage_win, text="Save Changes", command=save_and_close, bg="green", fg="white").pack(pady=10)
+
+    manage_win.update_idletasks()
+    height = manage_win.winfo_reqheight() + 20  # Add padding
+    manage_win.geometry(f"300x{height}")
 
 
 def show_summary_window():
@@ -201,7 +214,7 @@ def show_summary_window():
 
     # === Delete Button INSIDE table_frame ===
     def delete_past_entries():
-        answer = askokcancel('Confirmation', 'Are you sure?  This will delete all past log entries up to and including yesterday!', icon=WARNING)
+        answer = askokcancel('Confirmation', 'Are you sure?  This will delete all past log entries up to and including yesterday!', icon=WARNING, parent=win)
         if answer:
             today = date.today()
             updated = [s for s in all_sessions if s.start_time.date() == today]
@@ -412,22 +425,19 @@ def show_popup(projects, reschedule_callback=None):
     tk.Button(button_frame, text="End Workday", command=end_workday, bg="red", fg="white", width=button_width, height=button_height, font = button_font)\
         .grid(row=1, column=1, padx=5, pady=5)
 
-    # Interval dropdown
-    tk.Label(popup, text="Ask me again in:", font=("Arial", 10), bg=main_win_bg).pack()
+    # Interval dropdown (label + menu on same row)
+    interval_frame = tk.Frame(popup, bg=main_win_bg)
+    interval_frame.pack(pady=15)
+
+    tk.Label(interval_frame, text="Ask me again in:", font=("Arial", 10), bg=main_win_bg)\
+        .pack(side="left", padx=(0, 8))
+
     interval_var = tk.StringVar(value=selected_interval)
     option_menu = ttk.OptionMenu(
-        popup, interval_var, selected_interval, *INTERVAL_OPTIONS.keys(),
+        interval_frame, interval_var, selected_interval, *INTERVAL_OPTIONS.keys(),
         command=lambda new_value: on_interval_change(new_value, reschedule_callback)
     )
-
-    # option_menu = ttk.OptionMenu(
-    #     popup, interval_var, selected_interval, *INTERVAL_OPTIONS.keys(),
-    #     command=lambda new_value: (
-    #         log_debug_event(f"Interval changed to {new_value}"),
-    #         reschedule_callback(new_value) if reschedule_callback else None
-    #         )
-    #     )
-    option_menu.pack(pady=10)
+    option_menu.pack(side="left")
 
     update_ui()
     popup.update_idletasks()
